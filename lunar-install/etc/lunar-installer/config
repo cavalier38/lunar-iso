@@ -1,0 +1,3 @@
+  LIB_DIR=$PREFIX/lib/lunar-installer
+    MENUS=$LIB_DIR/menu
+BOOTSTRAP=$LIB_DIR/bootstrap

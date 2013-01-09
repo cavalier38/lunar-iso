@@ -1,0 +1,23 @@
+#!/bin/bash
+############################################################
+#                                                          #
+# This code is written for Lunar Linux, see                #
+# http://lunar-linux.org                                   #
+#                                                          #
+############################################################
+#                                                          #
+# This file contains routines to load all the parts        #
+# required for the installer scripts                       #
+#                                                          #
+############################################################
+#                                                          #
+# Copyrighted Peter de Ridder 2013                         #
+# This file in released under the GPLv2                    #
+#                                                          #
+############################################################
+
+# Load the library code
+for FILE in $LIB_DIR/*.lunar ; do
+  [ -s "$FILE" ] && . "$FILE"
+done
+

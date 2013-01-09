@@ -1,0 +1,65 @@
+#!/bin/bash
+############################################################
+#                                                          #
+# This code is written for Lunar Linux, see                #
+# http://lunar-linux.org                                   #
+#                                                          #
+############################################################
+#                                                          #
+# This file contains routines to register and display      #
+# menus                                                    #
+#                                                          #
+############################################################
+#                                                          #
+# Copyrighted Peter de Ridder 2013                         #
+# This file in released under the GPLv2                    #
+#                                                          #
+############################################################
+
+declare -a MENU
+
+# menu_register <catagory> <name> <function> <condition>
+menu_register() {
+  MENU+=("$1:$2:$3:$4")
+}
+
+# load the menu files. These are loaded in C local order
+menu_load() {
+  local FILE
+  if [ -n "$MENUS" ] ; then
+    for FILE in $MENUS/*.menu ; do
+      [ -s "$FILE" ] && . "$FILE"
+    done
+  fi
+}
+
+# menu_show <catagory>
+menu_show() {
+  local ITEM CAT NAME FUNC COND CHOICES FUNCTIONS CHOICE
+  CHOICES=""
+  declare -a FUNCTIONS
+  for ITEM in ${MENU[@]} ; do
+    IFS=: read CAT NAME FUNC COND <<< "$ITEM"
+    if [ "$CAT" == "$1" ] ; then
+      CHOICES+="
+$NAME
+$NAME
+$NAME"
+      FUNCTIONS+=("$NAME:$FUNC")
+    fi
+  done
+
+  export IFS=$'\t\n'
+  CHOICE=`$DIALOG --title "Lunar-Linux install menu" \
+    --nocancel --item-help --extra-button \
+    --extra-label "Settings" --colors \
+    --menu "$1" 0 0 0 $CHOICES`
+  export IFS=$' \t\n'
+
+  for ITEM in ${FUNCTIONS[@]} ; do
+    IFS=: read NAME FUNC <<< "$ITEM"
+    if [ "$NAME" == "$CHOICE" ] ; then
+      echo "$FUNC"
+    fi
+  done
+}

@@ -1,0 +1,49 @@
+#!/bin/bash
+############################################################
+#                                                          #
+# This code is written for Lunar Linux, see                #
+# http://lunar-linux.org                                   #
+#                                                          #
+#############################################################
+#                                                           #
+# Based on code:					    #
+# portions Copyright 2001 by Kyle Sallee                    #
+# portions Copyright 2002 by Kagan Kongar                   #
+# portions Copyright 2002 by rodzilla                       #
+# portions Copyright 2003-2004 by tchan, kc8apf             #
+# portions Copyright 2004-2007 by Auke Kok                  #
+# portions Copyright 2008-2010 by Stefan Wold               #
+#                                                           #
+#############################################################
+#                                                           #
+# This file in released under the GPLv2                     #
+#                                                           #
+#############################################################
+
+main() {
+  local COMMAND
+  menu_load
+  sleep 5
+  COMMAND=`menu_show Intro`
+  $COMMAND
+}
+
+. $PREFIX/etc/lunar-installer/config
+. /etc/os-release
+
+DIALOG="dialog
+--backtitle
+Installer $PRETTY_NAME
+--stdout"
+
+export IFS=$'\t\n'
+$DIALOG --infobox "$NAME Installer $VERSION starting ..." 3 50
+export IFS=$' \t\n'
+
+trap ":" INT QUIT
+
+. $BOOTSTRAP
+
+setterm -blank 0
+
+main
