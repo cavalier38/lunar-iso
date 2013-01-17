@@ -6,13 +6,8 @@
 #                                                          #
 ############################################################
 #                                                          #
-# Based on code:					   #
-# portions Copyright 2001 by Kyle Sallee                   #
-# portions Copyright 2002 by Kagan Kongar                  #
-# portions Copyright 2002 by rodzilla                      #
-# portions Copyright 2003-2004 by tchan, kc8apf            #
-# portions Copyright 2004-2007 by Auke Kok                 #
-# portions Copyright 2008-2010 by Stefan Wold              #
+# This file contains routines to load all the parts        #
+# required for the installer scripts                       #
 #                                                          #
 ############################################################
 #                                                          #
@@ -21,30 +16,8 @@
 #                                                          #
 ############################################################
 
-main() {
-  local COMMAND
-  widget_load
-  dialog_load
-  sleep 1
-  dialog_run TEST
-}
+# Load the library code
+for FILE in $LIB_DIR/*.lunar ; do
+  [ -s "$FILE" ] && . "$FILE"
+done
 
-. $PREFIX/etc/lunar-installer/config
-. /etc/os-release
-
-DIALOG="dialog
---backtitle
-Installer $PRETTY_NAME
---stdout"
-
-export IFS=$'\t\n'
-$DIALOG --aspect 70 --infobox "$NAME Installer $VERSION starting ..." 0 0
-export IFS=$' \t\n'
-
-trap ":" INT QUIT
-
-. $BOOTSTRAP
-
-setterm -blank 0
-
-main

@@ -1,0 +1,4 @@
+  LIB_DIR=$PREFIX/lib/lunar-install
+  DIALOGS=$LIB_DIR/dialog
+  WIDGETS=$LIB_DIR/widget
+BOOTSTRAP=$LIB_DIR/bootstrap

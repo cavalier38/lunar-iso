@@ -1,0 +1,129 @@
+#!/bin/bash
+############################################################
+#                                                          #
+# This code is written for Lunar Linux, see                #
+# http://lunar-linux.org                                   #
+#                                                          #
+############################################################
+#                                                          #
+# This file contains routines to register and display      #
+# widgets                                                  #
+#                                                          #
+############################################################
+#                                                          #
+# Copyrighted Peter de Ridder 2013                         #
+# This file in released under the GPLv2                    #
+#                                                          #
+############################################################
+
+# load the widget files
+widget_load() {
+  local FILE
+  if [ -n "$WIDGETS" ] ; then
+    for FILE in $WIDGETS/*.widget ; do
+      [ -s "$FILE" ] && . "$FILE"
+    done
+  fi
+}
+
+# load the dialog files
+dialog_load() {
+  local FILE
+  if [ -n "$DIALOGS" ] ; then
+    for FILE in $DIALOGS/*.dialog ; do
+      [ -s "$FILE" ] && . "$FILE"
+    done
+  fi
+}
+
+# dialog_add <dialog name> <tag> <widget name> <name> <describtion> <widget args>
+# This will globally declare WIDGET_<dialog name>_<tag> variables to store runtime information in
+# and it will add the widget to the globally declared DIALOG_<dialog name>_WIDGETS
+dialog_add() {
+  local DIALOG_NAME=$1
+  local TAG=$2
+  local WIDGET_NAME=$3
+  local VAR=WIDGET_${DIALOG_NAME}_${TAG}
+  local NAME=$4
+  local DESC=$5
+  shift 5
+  declare -g -A $VAR="$(${WIDGET_NAME}_create "$@")"
+
+  eval $VAR+='([type]=$WIDGET_NAME [name]=$NAME [desc]=$DESC)'
+
+  declare -g -A DIALOG_${DIALOG_NAME}_WIDGETS
+  eval DIALOG_${DIALOG_NAME}_WIDGETS[$TAG]='$VAR'
+}
+
+# dialog_run <dialog name>
+# if <dialog name> starts with -, $@ is passed directly to dialog
+# otherwise DIALOG_<dialog name> and DIALOG_<dialog name>_WIDGETS is used in the call to dialog
+dialog_run() {
+  if [ "${1:0:1}" = - ] ; then
+    local RET
+    export IFS=$'\t\n'
+    $DIALOG --title "Lunar-Linux install" "$@"
+    RET=$?
+    export IFS=$' \t\n'
+    return $RET
+  else
+    local -A DIALOG_WIDGETS=$(var_dup DIALOG_$1_WIDGETS)
+    local TAG WIDGET_VAR TYPE NAME DESC
+    local TITLE=DIALOG_$1[title]
+    local CHOICES CHOICE
+
+    while true ; do
+      CHOICES=""
+      for TAG in ${!DIALOG_WIDGETS[@]} ; do
+	WIDGET_VAR=${DIALOG_WIDGETS[$TAG]}
+	TYPE=$WIDGET_VAR[type]
+	NAME=$WIDGET_VAR[name]
+	DESC=$WIDGET_VAR[desc]
+	CHOICES+=$'\n'$TAG$'\n'"${!NAME}:[$(${!TYPE}_value $WIDGET_VAR)]"$'\n'"${!DESC}"
+      done
+
+      export IFS=$'\t\n'
+      CHOICE=$($DIALOG --title "Lunar-Linux install" --item-help --column-separator : --menu "${!TITLE}" 0 0 0 $CHOICES)
+      export IFS=$' \t\n'
+
+      if [ -z "$CHOICE" ] ; then
+	break
+      fi
+
+      WIDGET_VAR=${DIALOG_WIDGETS[$CHOICE]}
+      if [ -n "$WIDGET_VAR" ] ; then
+	TYPE=$WIDGET_VAR[type]
+	${!TYPE}_selected $WIDGET_VAR
+      fi
+    done
+  fi
+}
+
+# dialog_set <dialog name> <tag> <value>
+# Set the value for a dialog widget
+dialog_set() {
+  local DIALOG_NAME=$1
+  local TAG=$2
+  local VAR=WIDGET_${DIALOG_NAME}_${TAG}
+  local TYPE=$VAR[type]
+  shift 2
+
+  ${!TYPE}_set $VAR "$@"
+}
+
+# dialog_get <dialog name> <tag>
+# Get the value of a dialog widget
+dialog_get() {
+  local DIALOG_NAME=$1
+  local TAG=$2
+  local VAR=WIDGET_${DIALOG_NAME}_${TAG}
+  local TYPE=$VAR[type]
+
+  ${!TYPE}_get $VAR
+}
+
+# widget_create_return <array>
+# print the array so if can be used in declare or local
+widget_create_return() {
+  var_dup $1
+}

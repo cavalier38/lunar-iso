@@ -1,0 +1,57 @@
+#!/bin/bash
+############################################################
+#                                                          #
+# This code is written for Lunar Linux, see                #
+# http://lunar-linux.org                                   #
+#                                                          #
+############################################################
+#                                                          #
+# This file contains the textfield widget                  #
+#                                                          #
+############################################################
+#                                                          #
+# Copyrighted Peter de Ridder 2013                         #
+# This file in released under the GPLv2                    #
+#                                                          #
+############################################################
+
+# textfield_create [<init string>]
+# stdout will contain the array init which can be used in declare or local
+textfield_create() {
+  local -A THIS=([value]="$1")
+
+  widget_create_return THIS
+}
+
+# textfield_value <widget runtime>
+# stdout will contain the value to display in the dialog
+textfield_value() {
+  local VALUE=$1[value]
+  echo ${!VALUE}
+}
+
+# textfield_selected <widget runtime>
+# do the action when this widget was selected in the menu
+# display an inputbox to change the value
+textfield_selected() {
+  local NAME=$1[name]
+  local VALUE=$1[value]
+  local SET
+
+  if SET=$(dialog_run --inputbox "${!NAME}" 0 0 "${!VALUE}") ; then
+    eval ${VALUE}='"$SET"'
+  fi
+}
+
+# textfield_set <widget runtime> <value>
+textfield_set() {
+  local VALUE=$1[value]
+  eval ${VALUE}='"$2"'
+}
+
+# textfield_get <widget runtime>
+# stdout will contain the value
+textfield_get() {
+  local VALUE=$1[value]
+  echo ${!VALUE}
+}
