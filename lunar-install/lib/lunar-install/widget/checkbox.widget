@@ -1,0 +1,58 @@
+#!/bin/bash
+############################################################
+#                                                          #
+# This code is written for Lunar Linux, see                #
+# http://lunar-linux.org                                   #
+#                                                          #
+############################################################
+#                                                          #
+# This file contains the checkbox widget                   #
+#                                                          #
+############################################################
+#                                                          #
+# Copyrighted Peter de Ridder 2013                         #
+# This file in released under the GPLv2                    #
+#                                                          #
+############################################################
+
+# checkbox_create [<init value>] [<on string>] [<off string>]
+# stdout will contain the array init which can be used in declare or local
+checkbox_create() {
+  local -A THIS=([value]="${1:-n}" [y]="${2:-Y}" [n]="${3:-N}")
+
+  widget_create_return THIS
+}
+
+# checkbox_value <widget runtime>
+# stdout will contain the value to display in the dialog
+checkbox_value() {
+  local VALUE=$1[value]
+  local LABEL=$1[${!VALUE:-n}]
+  echo ${!LABEL}
+}
+
+# checkbox_selected <widget runtime>
+# do the action when this widget was selected in the menu
+# this toggles the value
+checkbox_selected() {
+  local VALUE=$1[value]
+  local SET=y
+
+  [ "${!VALUE}" = y ] && SET=n
+
+  eval ${VALUE}='"$SET"'
+}
+
+# checkbox_set <widget runtime> <value>
+# valid <value> are y and n
+checkbox_set() {
+  local VALUE=$1[value]
+  eval ${VALUE}='"$2"'
+}
+
+# checkbox_get <widget runtime>
+# stdout will contain the value: y or n
+checkbox_get() {
+  local VALUE=$1[value]
+  echo ${!VALUE:-n}
+}

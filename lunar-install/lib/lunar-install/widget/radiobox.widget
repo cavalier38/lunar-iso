@@ -1,0 +1,79 @@
+#!/bin/bash
+############################################################
+#                                                          #
+# This code is written for Lunar Linux, see                #
+# http://lunar-linux.org                                   #
+#                                                          #
+############################################################
+#                                                          #
+# This file contains the radiobox widget                  #
+#                                                          #
+############################################################
+#                                                          #
+# Copyrighted Peter de Ridder 2013                         #
+# This file in released under the GPLv2                    #
+#                                                          #
+############################################################
+
+# radiobox_create <values array> [<init value>]
+# stdout will contain the array init which can be used in declare or local
+# <values array> can be an array declaration of an array name
+radiobox_create() {
+  local -A THIS=([value]="$2")
+
+  if [ ${1:0:1} = "(" ] ; then
+    THIS[options]="$1"
+  else
+    THIS[options]="$(var_dup $1)"
+  fi
+
+  widget_create_return THIS
+}
+
+# radiobox_value <widget runtime>
+# stdout will contain the value to display in the dialog
+radiobox_value() {
+  local VALUE=$1[value]
+  local OPTIONS=$1[options]
+  local -A LIST=${!OPTIONS}
+  echo ${LIST[${!VALUE}]}
+}
+
+# radiobox_selected <widget runtime>
+# do the action when this widget was selected in the menu
+# display a radiolist to select the value
+radiobox_selected() {
+  local NAME=$1[name]
+  local VALUE=$1[value]
+  local OPTIONS=$1[options]
+  local SET DEFAULT
+  local -a CHOICES
+
+  local -A LIST=${!OPTIONS}
+
+  for TAG in ${!LIST[@]} ; do
+    CHOICES+=($TAG "${LIST[$TAG]}")
+    if [ "$TAG" = "${!VALUE}" ] ; then
+      CHOICES+=(on)
+    else
+      CHOICES+=(off)
+    fi
+  done
+
+  if SET=$(dialog_run --radiolist "${!NAME}" 0 0 0 "${CHOICES[@]}") ; then
+    eval ${VALUE}='"$SET"'
+  fi
+}
+
+# radiobox_set <widget runtime> <value>
+radiobox_set() {
+  local VALUE=$1[value]
+  eval ${VALUE}='"$2"'
+}
+
+# radiobox_get <widget runtime>
+# stdout will contain the value
+radiobox_get() {
+  local VALUE=$1[value]
+  echo ${!VALUE}
+}

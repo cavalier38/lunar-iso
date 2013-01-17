@@ -70,7 +70,7 @@ dialog_run() {
     local -A DIALOG_WIDGETS=$(var_dup DIALOG_$1_WIDGETS)
     local TAG WIDGET_VAR TYPE NAME DESC
     local TITLE=DIALOG_$1[title]
-    local CHOICES CHOICE
+    local CHOICES CHOICE DEFAULT_CHOICE
 
     while true ; do
       CHOICES=""
@@ -83,12 +83,14 @@ dialog_run() {
       done
 
       export IFS=$'\t\n'
-      CHOICE=$($DIALOG --title "Lunar-Linux install" --item-help --column-separator : --menu "${!TITLE}" 0 0 0 $CHOICES)
+      CHOICE=$($DIALOG --title "Lunar-Linux install" $DEFAULT_CHOICE --item-help --column-separator : --menu "${!TITLE}" 0 0 0 $CHOICES)
       export IFS=$' \t\n'
 
       if [ -z "$CHOICE" ] ; then
 	break
       fi
+
+      DEFAULT_CHOICE=$'--default-item\n'$CHOICE
 
       WIDGET_VAR=${DIALOG_WIDGETS[$CHOICE]}
       if [ -n "$WIDGET_VAR" ] ; then
