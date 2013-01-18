@@ -1,0 +1,88 @@
+#!/bin/bash
+############################################################
+#                                                          #
+# This code is written for Lunar Linux, see                #
+# http://lunar-linux.org                                   #
+#                                                          #
+############################################################
+#                                                          #
+# This file contains the combobox widget                  #
+#                                                          #
+############################################################
+#                                                          #
+# Copyrighted Peter de Ridder 2013                         #
+# This file in released under the GPLv2                    #
+#                                                          #
+############################################################
+
+# combobox_create <values array> [<init value>]
+# stdout will contain the array init which can be used in declare or local
+# <values array> can be an array declaration of an array name
+combobox_create() {
+  local -A THIS=([value]="$2")
+
+  if [ ${1:0:1} = "(" ] ; then
+    THIS[options]="$1"
+  else
+    THIS[options]="$(var_dup $1)"
+  fi
+
+  widget_create_return THIS
+}
+
+# combobox_value <widget runtime>
+# stdout will contain the value to display in the dialog
+combobox_value() {
+  local VALUE=$1[value]
+  local OPTIONS=$1[options]
+  local -A LIST=${!OPTIONS}
+  if [ -n "${LIST[${!VALUE}]}" ] ; then
+    echo ${LIST[${!VALUE}]}
+  else
+    echo ${!VALUE}
+  fi
+}
+
+# combobox_selected <widget runtime>
+# do the action when this widget was selected in the menu
+# display a radiolist to select the value
+combobox_selected() {
+  local NAME=$1[name]
+  local VALUE=$1[value]
+  local OPTIONS=$1[options]
+  local SET DEFAULT
+  local -a CHOICES=(custom [${!VALUE}] on)
+
+  local -A LIST=${!OPTIONS}
+
+  for TAG in ${!LIST[@]} ; do
+    CHOICES+=($TAG "${LIST[$TAG]}")
+    if [ "$TAG" = "${!VALUE}" ] ; then
+      CHOICES+=(on)
+      CHOICES[2]=off
+    else
+      CHOICES+=(off)
+    fi
+  done
+
+  if SET=$(dialog_run --radiolist "${!NAME}" 0 0 0 "${CHOICES[@]}") ; then
+    if [ "$SET" != custom ] ; then
+      eval ${VALUE}='"$SET"'
+    elif SET=$(dialog_run --inputbox "${!NAME}" 0 0 "${!VALUE}") ; then
+      eval ${VALUE}='"$SET"'
+    fi
+  fi
+}
+
+# combobox_set <widget runtime> <value>
+combobox_set() {
+  local VALUE=$1[value]
+  eval ${VALUE}='"$2"'
+}
+
+# combobox_get <widget runtime>
+# stdout will contain the value
+combobox_get() {
+  local VALUE=$1[value]
+  echo ${!VALUE}
+}

@@ -22,3 +22,4 @@ dialog_add TEST A textfield "Text field" "Enter text here" Init
 dialog_add TEST B textfield Another "Empty field"
 dialog_add TEST C checkbox "Toggle me" "Checkbox will toggle between y and n"
 dialog_add TEST D radiobox "Select one" "Select one of the options" '([1]="one" [2]="two" [3]="three" [4]="four")'
+dialog_add TEST D combobox "Pick an option" "Select one of the options or enter a text" '([1]="one" [2]="two" [3]="three" [4]="four")' 2
