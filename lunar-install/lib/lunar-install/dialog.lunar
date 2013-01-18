@@ -61,8 +61,13 @@ dialog_add() {
 dialog_run() {
   if [ "${1:0:1}" = - ] ; then
     local RET
+    local OPTIONS OPTION
+    for OPTION in "$@" ; do
+      OPTIONS+=$'\n'"$OPTION"
+      [ "$OPTION" = --and-widget ] && OPTIONS+=$'\n--title\nLunar-Linux install'
+    done
     export IFS=$'\t\n'
-    $DIALOG --title "Lunar-Linux install" "$@"
+    $DIALOG --title "Lunar-Linux install" $OPTIONS
     RET=$?
     export IFS=$' \t\n'
     return $RET
