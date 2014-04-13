@@ -5,19 +5,19 @@ Lunar-%VERSION%.iso, 0c%CODENAME% (%DATE%)07, kernel %KERNEL%
 09Lunar-Linux team <maintainer@lunar-linux.org>07
 All Rights Reserved.
 
-Safe mode
+Video mode
 
-In order to boot with certain hardware and kernel features disabled,
-type 02safe07 to the boot prompt and press ENTER. This option
-also disables MTRR, RAID, LVM, USB keyboard, FireWire and much more such
-as APM, ACPI, APIC etc. Some hardware may not function as well.
+Certain display configuration or graphics hardware can break video output,
+type 02novga07 to the boot prompt and press ENTER. This option
+also disables vga and other video drivers.
 
-This safe mode does not restrict your access to write to devices, so
-beware when you need to recover a broken system. If you wish to perform
-recovery of a broken system, boot into the installer and use the 03shell07
-option to start a rescue shell
+If the graphics card is supported by a kernel driver then the display will be
+set to the native resolution. With the 02video=07 option the desired video
+mode can be set.
+In order to use the vesa video driver use the 02nomodeset07 option. In addition
+to 02vga=07 the correct video mode can be selected.
 
 
 type 02safe07 followed by optional kernel parameters to use this boot option
 
-                             0aF107 install  0aF207 modules  02F302 safe
+                             0aF107 install  0aF207 modules  02F302 video  0aF407 RAID

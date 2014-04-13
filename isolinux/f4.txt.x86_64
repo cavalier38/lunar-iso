@@ -1,0 +1,23 @@
+
+Lunar-%VERSION%.iso, 0c%CODENAME% (%DATE%)07, kernel %KERNEL%
+
+0eWelcome07 to 05Lunar Linux07 Copyright (C) %COPYRIGHTYEAR% by the
+09Lunar-Linux team <maintainer@lunar-linux.org>07
+All Rights Reserved.
+
+RAID
+
+Installing on "Fake RAID" or a pre-exsisting software RAID requires the RIAD sets
+to be discoved, type 02linux rd.auto07 to automatically discover most RAID.
+With 02rd.md=007, 02rd.dm=007 or 02rd.lvm=007 discovering of certain RAID
+types can be disabled.
+To only activate specific RAID volumes, volume groups or logical volumes use one or
+more of the following options. Multiple can be specified to active more sets.
+02rd.md.uuid=07 followed by md raid uuid
+02rd.dm.uuid=07 followed by dm raid uuid
+02rd.lvm.vg=07 followed by volume group name
+02rd.lvm.lv=07 followed by logical volume name
+
+type 02safe07 followed by optional kernel parameters to use this boot option
+
+                             0aF107 install  0aF207 modules  0aF307 video  02F402 RIAD

@@ -14,9 +14,10 @@ To continue press ENTER, or use the function keys to select other pages.
 
 F1 - this page
 F2 - booting when you need special drivers loaded
-F3 - safe mode booting
+F3 - video modes
+F4 - RAID configurations
 
 
 To continue, press 02ENTER07
 
-                             02F102 install  0aF207 modules  0aF307 safe
+                             02F102 install  0aF207 modules  0aF307 video  0aF407 RAID
